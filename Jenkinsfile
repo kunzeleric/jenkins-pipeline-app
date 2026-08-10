@@ -15,15 +15,13 @@ pipeline {
       steps {
         echo "Hello, ${USER_NAME}!"
         echo "Selected environment: ${params.ENVIRONMENT}"
+        echo "This stage will only run on the main branch and when the environment is set to prod."
       }
 
       when {
         allOf {
-          branch 'main',
-          environment name: 'ENVIRONMENT', value: 'prod'
-        }
-        return {
-          echo "This stage will only run on the main branch and when the environment is set to prod."
+          branch 'main'
+          expression { return params.ENVIRONMENT == 'prod' }
         }
       }
     }
@@ -52,16 +50,26 @@ pipeline {
       }
     }
 
+    stage('Build Stage Input') {
+      agent none
+      input {
+        message "Do you want to proceed with the build?"
+      }
+
+      steps {
+        echo "User confirmed to proceed with the build."
+      }
+      
+      when {
+        expression { return params.ENVIRONMENT == 'prod'}
+      }
+    }
+
     stage ('Build Stage') {
       steps {
         retry(3) {
           echo "Building the application..."
           sh 'npm run build'
-        }
-
-        timeout(time: 10, unit: 'SECONDS') {
-          echo "This build step will timeout after 10 seconds."
-          sh 'sleep 15'
         }
       }
     }
