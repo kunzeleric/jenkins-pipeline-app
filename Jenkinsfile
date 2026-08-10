@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   environment {
-      USER_NAME = "Eric",
+      USER_NAME = "Eric"
       DC_WEBHOOK = credentials('dc-webhook')
   }
 
