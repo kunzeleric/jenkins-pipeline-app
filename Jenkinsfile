@@ -75,10 +75,12 @@ pipeline {
 
     stage ('Build Stage') {
       steps {
-        echo "Building the application..."
-        unstash 'node-modules'
-        retry(3) {
-          sh 'npm run build'
+        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+          echo "Building the application..."
+          unstash 'node-modules'
+          retry(3) {
+            sh 'npm run build'
+          }
         }
       }
     }
