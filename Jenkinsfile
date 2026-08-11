@@ -28,14 +28,14 @@ pipeline {
     stage('Parallel Stage') {
       failFast true
       parallel {
-        stage('Lint') {
-          agent { label 'for-parallel-steps' }
-          steps { sh 'npm run lint' }
-        }
-        stage('Test') {
-          agent { label 'for-parallel-steps' }
-          steps { sh 'npm run test' }
-        }
+          stage('Lint') {
+            agent any
+            steps { sh 'npm run lint' }
+          }
+          stage('Test') {
+            agent any
+            steps { sh 'npm run test' }
+          }
       }
     }
 
