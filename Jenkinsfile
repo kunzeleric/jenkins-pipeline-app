@@ -25,16 +25,34 @@ pipeline {
       }
     }
 
+    stage('Install Stage') {
+      tools {
+        nodejs 'node-20'
+      }
+      steps {
+        sh 'node -v'
+        sh 'npm -v'
+        sh 'npm ci'
+        stash name: 'node-modules', includes: 'node_modules/**'
+      }
+    }
+
     stage('Parallel Stage') {
       failFast true
       parallel {
           stage('Lint') {
             agent any
-            steps { sh 'npm run lint' }
+            steps { 
+              unstash 'node-modules'
+              sh 'npm run lint' 
+            }
           }
           stage('Test') {
             agent any
-            steps { sh 'npm run test' }
+            steps { 
+              unstash 'node-modules'
+              sh 'npm run test' 
+              }
           }
       }
     }
@@ -56,8 +74,9 @@ pipeline {
 
     stage ('Build Stage') {
       steps {
+        echo "Building the application..."
+        unstash 'node-modules'
         retry(3) {
-          echo "Building the application..."
           sh 'npm run build'
         }
       }
@@ -85,5 +104,4 @@ pipeline {
     }
   }
   }
-
 }
