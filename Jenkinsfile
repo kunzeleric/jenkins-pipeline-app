@@ -1,6 +1,10 @@
 pipeline {
   agent any
 
+  environment {
+    USER_NAME = "Eric"
+  }
+
   parameters {
     choice(name: 'ENVIRONMENT', choices: ['dev', 'staging', 'prod'], description: 'Select the environment to deploy to')
   }
