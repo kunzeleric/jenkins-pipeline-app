@@ -22,22 +22,16 @@ pipeline {
     }
 
     stage('Parallel Stage') {
+      failFast true
       parallel {
-            failFast true
-
-            stage('Lint') {
-            steps {
-                echo "Running linting..."
-                sh 'npm run lint'
-              }
-            }
-
-            stage('Test') {
-            steps {
-                echo "Running tests..."
-                sh 'npm run test'
-              }
-            }
+        stage('Lint') {
+          agent { label 'for-parallel-steps' }
+          steps { sh 'npm run lint' }
+        }
+        stage('Test') {
+          agent { label 'for-parallel-steps' }
+          steps { sh 'npm run test' }
+        }
       }
     }
 
