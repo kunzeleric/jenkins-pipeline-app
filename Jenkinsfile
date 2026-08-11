@@ -1,6 +1,10 @@
 pipeline {
   agent any
 
+  tools {
+    nodejs 'node-20'
+  }
+
   environment {
     USER_NAME = "Eric"
   }
@@ -26,9 +30,6 @@ pipeline {
     }
 
     stage('Install Stage') {
-      tools {
-        nodejs 'node-20'
-      }
       steps {
         sh 'node -v'
         sh 'npm -v'
