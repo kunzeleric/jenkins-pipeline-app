@@ -84,18 +84,29 @@ pipeline {
     }
   }
 
-  post {
+post {
+  always {
+    echo "Running post actions..."
+  }
+
   success {
     withCredentials([string(credentialsId: 'dc-webhook', variable: 'DC_WEBHOOK')]) {
-      sh 'curl -f -X POST -H "Content-Type: application/json" -d \'{"content":"Pipeline completed successfully!"}\' "$DC_WEBHOOK"'
+      sh """
+        curl -f -X POST -H "Content-Type: application/json" \
+             -d '{"content":"✅ Build #${env.BUILD_NUMBER} passou (env: ${params.ENVIRONMENT})"}' \
+             "\$DC_WEBHOOK"
+      """
     }
   }
 
   failure {
     withCredentials([string(credentialsId: 'dc-webhook', variable: 'DC_WEBHOOK')]) {
-      sh 'curl -f -X POST -H "Content-Type: application/json" -d \'{"content":"Pipeline failed!"}\' "$DC_WEBHOOK"'
+      sh """
+        curl -f -X POST -H "Content-Type: application/json" \
+             -d '{"content":"❌ Build #${env.BUILD_NUMBER} falhou (env: ${params.ENVIRONMENT})"}' \
+             "\$DC_WEBHOOK"
+      """
     }
   }
-
-  }
+}
 }
